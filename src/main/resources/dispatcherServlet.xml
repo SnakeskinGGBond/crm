@@ -29,10 +29,11 @@
     <mvc:resources mapping="/jquery/**" location="/jquery/"/>
     <mvc:resources mapping="/js/**" location="/jquery/"/>
     <mvc:resources mapping="/workbench/**" location="/workbench/"/>
+    <mvc:resources mapping="/settings/**" location="/settings/"/>
     <!--拦截器-->
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/**/*"/>
             <mvc:exclude-mapping path="/**/fonts/*"/>
             <mvc:exclude-mapping path="/**/*.css"/>
             <mvc:exclude-mapping path="/**/*.js"/>
