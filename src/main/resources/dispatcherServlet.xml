@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/context 
+       https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--SpringMVC配置文件,声明controller和其他web相关对象-->
+    <!--组件扫描器-->
+    <context:component-scan base-package="com.jbp.crm.settings.web.controller"/>
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--注解驱动-->
+    <mvc:annotation-driven/>
+    <!--异常处理-->
+    <context:component-scan base-package="com.jbp.crm.handler"/>
+
+    <!--静态资源访问-->
+    <mvc:resources mapping="/image/**" location="/image/"/>
+    <mvc:resources mapping="/jquery/**" location="/jquery/"/>
+    <mvc:resources mapping="/js/**" location="/jquery/"/>
+    <mvc:resources mapping="/workbench/**" location="/workbench/"/>
+    <!--拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/**/fonts/*"/>
+            <mvc:exclude-mapping path="/**/*.css"/>
+            <mvc:exclude-mapping path="/**/*.js"/>
+            <mvc:exclude-mapping path="/**/*.png"/>
+            <mvc:exclude-mapping path="/**/*.gif"/>
+            <mvc:exclude-mapping path="/**/*.jpg"/>
+            <mvc:exclude-mapping path="/**/*.JPG"/>
+            <mvc:exclude-mapping path="/**/*.jpeg"/>
+            <bean class="com.jbp.crm.handler.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

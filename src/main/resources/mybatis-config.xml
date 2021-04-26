@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--设置别名-->
+    <typeAliases>
+        <!--name:实体类所在的包名-->
+        <package name="com.jbp.crm.settings.domain"/>
+    </typeAliases>
+    <mappers>
+        <!--使用包名,这个包中所有的mapper.xml文件能一次性加载-->
+        <package name="com.jbp.crm.settings.dao"/>
+    </mappers>
+</configuration>
