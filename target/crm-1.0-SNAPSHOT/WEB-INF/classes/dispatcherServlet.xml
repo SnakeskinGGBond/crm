@@ -27,8 +27,16 @@
     <!--静态资源访问-->
     <mvc:resources mapping="/image/**" location="/image/"/>
     <mvc:resources mapping="/jquery/**" location="/jquery/"/>
-    <mvc:resources mapping="/js/**" location="/jquery/"/>
+    <!--<mvc:resources mapping="/js/**" location="/jquery/"/>
+    <mvc:resources mapping="/js/**" location="/jquery/bootstrap-datetimepicker-master/js/"/>
+    <mvc:resources mapping="/js/**" location="/jquery/bootstrap-datetimepicker-master/locale/"/>
+    <mvc:resources mapping="/js/**" location="/jquery/bootstrap_3.3.0/js/"/>
+    <mvc:resources mapping="/css/**" location="/jquery/bootstrap-datetimepicker-master/css/"/>
+    <mvc:resources mapping="/css/**" location="/jquery/bootstrap_3.3.0/css/"/>
+    <mvc:resources mapping="/css/**" location="/jquery/zTree_v3-master/css/"/>
+    <mvc:resources mapping="/fonts/**" location="/jquery/bootstrap_3.3.0/fonts/"/>-->
     <mvc:resources mapping="/workbench/**" location="/workbench/"/>
+    <mvc:resources mapping="/settings/**" location="/settings/"/>
     <!--拦截器-->
     <mvc:interceptors>
         <mvc:interceptor>
@@ -41,6 +49,8 @@
             <mvc:exclude-mapping path="/**/*.jpg"/>
             <mvc:exclude-mapping path="/**/*.JPG"/>
             <mvc:exclude-mapping path="/**/*.jpeg"/>
+            <mvc:exclude-mapping path="/jquery/**"/>
+            <mvc:exclude-mapping path="/image/**"/>
             <bean class="com.jbp.crm.handler.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
