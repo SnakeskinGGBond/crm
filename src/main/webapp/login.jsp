@@ -11,6 +11,10 @@
     <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function () {
+            //如果当前窗口不是顶层窗口,将当前窗口设为顶层窗口
+            if (window.top != window) {
+                window.top.location = window.location;
+            }
             //清空用户文本
             $("#loginAct").val("");
             //加载完毕用户文本框自动获取焦点
@@ -38,14 +42,14 @@
                 return false;
             }
             $.ajax({
-                url:"user/login",
-                data:{
-                    "loginAct":loginAct,
-                    "loginPwd":loginPwd
+                url: "user/login",
+                data: {
+                    "loginAct": loginAct,
+                    "loginPwd": loginPwd
                 },
-                type:"post",
-                dataType:"json",
-                success:function (resp) {
+                type: "post",
+                dataType: "json",
+                success: function (resp) {
                     /*
                         resp
                         {
@@ -54,7 +58,7 @@
                         }
                      */
                     //登录成功
-                    if (resp.success){
+                    if (resp.success) {
                         //跳转到工作台初始页
                         window.location.href = "workbench/index.jsp";
                     } else {
