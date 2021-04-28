@@ -2,6 +2,7 @@ package com.jbp.crm.settings.dao;
 
 import com.jbp.crm.settings.domain.User;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,6 +10,8 @@ import java.util.Map;
  */
 public interface UserDao {
     User login(Map<String, String> map);
+
+    List<User> getUserList();
     /*
     关于登录
         验证账号和密码
