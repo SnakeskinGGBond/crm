@@ -7,9 +7,11 @@
     <typeAliases>
         <!--name:实体类所在的包名-->
         <package name="com.jbp.crm.settings.domain"/>
+        <package name="com.jbp.crm.workbench.domain"/>
     </typeAliases>
     <mappers>
         <!--使用包名,这个包中所有的mapper.xml文件能一次性加载-->
         <package name="com.jbp.crm.settings.dao"/>
+        <package name="com.jbp.crm.workbench.dao"/>
     </mappers>
 </configuration>

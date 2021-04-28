@@ -10,8 +10,12 @@
        https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <!--SpringMVC配置文件,声明controller和其他web相关对象-->
+
     <!--组件扫描器-->
+    <!--用户控制器-->
     <context:component-scan base-package="com.jbp.crm.settings.web.controller"/>
+    <!--市场活动控制器-->
+    <context:component-scan base-package="com.jbp.crm.workbench.web.controller"/>
 
     <!--视图解析器-->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -37,6 +41,7 @@
     <mvc:resources mapping="/fonts/**" location="/jquery/bootstrap_3.3.0/fonts/"/>-->
     <mvc:resources mapping="/workbench/**" location="/workbench/"/>
     <mvc:resources mapping="/settings/**" location="/settings/"/>
+
     <!--拦截器-->
     <mvc:interceptors>
         <mvc:interceptor>
