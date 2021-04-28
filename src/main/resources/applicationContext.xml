@@ -24,11 +24,12 @@
     <!--声明MyBatis扫描器-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <property name="basePackage" value="com.jbp.crm.settings.dao"/>
+        <property name="basePackage" value="com.jbp.crm.settings.dao,com.jbp.crm.workbench.dao"/>
     </bean>
 
     <!--声明组件扫描器,service的注解@service所在的包名位置-->
     <context:component-scan base-package="com.jbp.crm.settings.service"/>
+    <context:component-scan base-package="com.jbp.crm.workbench.service"/>
 
     <!--事务配置-->
 </beans>
