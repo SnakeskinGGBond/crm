@@ -20,12 +20,43 @@
             src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
     <script type="text/javascript">
-
         $(function () {
+            //为创建按钮绑定事件,打开添加操作的模态窗口
+            $("#addBtn").click(function () {
 
+                $(".time").datetimepicker({
+                    minView: "month",
+                    language: "zh-CN",
+                    format: "yyyy-mm-dd",
+                    autoclose: true,
+                    todayBtn: true,
+                    pickerPosition: "bottom-left"
+                });
+                /*
+                    操作模态窗口的方式:
+                        找到需要操作的模态窗口的jquery对象,调用modal方法,为该方法传递参数,show:打开窗口,hide:关闭窗口
 
+                 */
+                //alert("123");
+                //走后台,获取用户列表
+                $.ajax({
+                    url: "activity/getUserList",
+                    type: "get",
+                    dataType: "json",
+                    success: function (resp) {
+                        let html = "<option></option>"
+                        $.each(resp, function (index, element) {
+                            html += "<option value='" + element.id + "'>" + element.name + "</option>"
+                        })
+                        $("#create-marketActivityOwner").html(html);
+                        //将当前登录用户设置为下拉框默认选项
+                        let id = "${user.id}";
+                        $("#create-marketActivityOwner").val(id);
+                        $("#createActivityModal").modal("show");
+                    }
+                })
+            })
         });
-
     </script>
 </head>
 <body>
@@ -47,34 +78,32 @@
                     <div class="form-group">
                         <label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span
                                 style="font-size: 15px; color: red;">*</span></label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <select class="form-control" id="create-marketActivityOwner">
-                                <option>zhangsan</option>
-                                <option>lisi</option>
-                                <option>wangwu</option>
+
                             </select>
                         </div>
                         <label for="create-marketActivityName" class="col-sm-2 control-label">名称<span
                                 style="font-size: 15px; color: red;">*</span></label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <input type="text" class="form-control" id="create-marketActivityName">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
-                        <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="create-startTime">
+                        <div class="col-sm-10" style="width: 270px;">
+                            <input type="text" class="form-control time" id="create-startTime" readonly>
                         </div>
                         <label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
-                        <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="create-endTime">
+                        <div class="col-sm-10" style="width: 270px;">
+                            <input type="text" class="form-control time" id="create-endTime" readonly>
                         </div>
                     </div>
                     <div class="form-group">
 
                         <label for="create-cost" class="col-sm-2 control-label">成本</label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <input type="text" class="form-control" id="create-cost">
                         </div>
                     </div>
@@ -113,7 +142,7 @@
                     <div class="form-group">
                         <label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span
                                 style="font-size: 15px; color: red;">*</span></label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <select class="form-control" id="edit-marketActivityOwner">
                                 <option>zhangsan</option>
                                 <option>lisi</option>
@@ -122,25 +151,25 @@
                         </div>
                         <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span
                                 style="font-size: 15px; color: red;">*</span></label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <input type="text" class="form-control" id="edit-marketActivityName" value="发传单">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
                         </div>
                         <label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="edit-cost" class="col-sm-2 control-label">成本</label>
-                        <div class="col-sm-10" style="width: 300px;">
+                        <div class="col-sm-10" style="width: 270px;">
                             <input type="text" class="form-control" id="edit-cost" value="5,000">
                         </div>
                     </div>
@@ -212,7 +241,19 @@
         <div class="btn-toolbar" role="toolbar"
              style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
             <div class="btn-group" style="position: relative; top: 18%;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal">
+                <%--
+                    点击创建按钮,观察两个属性和属性值
+                    data-toggle="modal" 表示触发该按钮,将打开一个模态窗口
+
+                    data-target="#createActivityModal" 表示要打开那个模态窗口,通过#id的形式找到该窗口
+
+                    以属性和属性值的方式卸载了button元素中,用来打开模态窗口
+                    但是这样做是有问题的:
+                        没有办法对按钮的功能进行扩充,所以未来的时机项目中,对于处罚模态窗口的操作,不卸载元素中
+                        应该由js代码来操作
+
+                --%>
+                <button type="button" class="btn btn-primary" id="addBtn">
                     <span class="glyphicon glyphicon-plus"></span> 创建
                 </button>
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span
