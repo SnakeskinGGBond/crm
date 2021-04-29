@@ -51,9 +51,6 @@ public class Activity {
      */
     private String editBy;
 
-    /**
-     *
-     */
 
     public Activity() {
     }
@@ -144,5 +141,22 @@ public class Activity {
 
     public void setEditBy(String editBy) {
         this.editBy = editBy;
+    }
+
+    @Override
+    public String toString() {
+        return "Activity{" +
+                "id='" + id + '\'' +
+                ", owner='" + owner + '\'' +
+                ", name='" + name + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", cost='" + cost + '\'' +
+                ", description='" + description + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", editTime='" + editTime + '\'' +
+                ", editBy='" + editBy + '\'' +
+                '}';
     }
 }
