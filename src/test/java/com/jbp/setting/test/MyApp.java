@@ -40,5 +40,12 @@ public class MyApp {
         pwd = MD5Util.getMD5(pwd);
         System.out.println(pwd);
     }
+    @Test
+    public void dataTest(){
+        String kaishi = "2019-10-18";
+        String jieshu = "2019-10-19";
+        int i = kaishi.compareTo(jieshu);
+        System.out.println(i);
+    }
 
 }
