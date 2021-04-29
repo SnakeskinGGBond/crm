@@ -50,9 +50,44 @@
                         })
                         $("#create-marketActivityOwner").html(html);
                         //将当前登录用户设置为下拉框默认选项
-                        let id = "${user.id}";
+                        var id = "${user.id}";
                         $("#create-marketActivityOwner").val(id);
                         $("#createActivityModal").modal("show");
+                    }
+                })
+            })
+
+            //为模态窗口的保存按钮绑定事件,执行添加操作
+            $("#saveBtn").click(function () {
+                $.ajax({
+                    url: "activity/save",
+                    data:{
+                        "owner":$.trim($("#create-marketActivityOwner").val()),
+                        "name":$.trim($("#create-marketActivityName").val()),
+                        "startDate":$.trim($("#create-startDate").val()),
+                        "endDate":$.trim($("#create-endDate").val()),
+                        "cost":$.trim($("#create-cost").val()),
+                        "description":$.trim($("#create-description").val())
+                    },
+                    type: "post",
+                    dataType: "json",
+                    success: function (resp) {
+                        if (resp.success){
+                            //添加成功
+                            //清空添加操作模态窗口中数据
+                            /*
+                                jquery对象和dom对象相互转换
+                             */
+                            $("#activityAddForm")[0].reset();
+                            //关闭模态窗口
+                            $("#createActivityModal").modal("hide");
+                            //刷新市场活动信息列表(局部刷新)
+
+                        } else{
+                            //添加失败
+                            alert(1)
+                            alert(resp.msg);
+                        }
                     }
                 })
             })
@@ -73,8 +108,8 @@
             </div>
             <div class="modal-body">
 
-                <form class="form-horizontal" role="form">
-
+                <form id="activityAddForm" class="form-horizontal" role="form">
+                    <%--所有者--%>
                     <div class="form-group">
                         <label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span
                                 style="font-size: 15px; color: red;">*</span></label>
@@ -89,17 +124,20 @@
                             <input type="text" class="form-control" id="create-marketActivityName">
                         </div>
                     </div>
-
+                    <%--开始,结束日期--%>
                     <div class="form-group">
                         <label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
                         <div class="col-sm-10" style="width: 270px;">
-                            <input type="text" class="form-control time" id="create-startTime" readonly>
+                            <input type="text" class="form-control time" id="create-startDate" readonly
+                                   style="cursor: pointer"/>
                         </div>
                         <label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
                         <div class="col-sm-10" style="width: 270px;">
-                            <input type="text" class="form-control time" id="create-endTime" readonly>
+                            <input type="text" class="form-control time" id="create-endDate" readonly
+                                   style="cursor: pointer"/>
                         </div>
                     </div>
+                    <%--成本--%>
                     <div class="form-group">
 
                         <label for="create-cost" class="col-sm-2 control-label">成本</label>
@@ -107,19 +145,21 @@
                             <input type="text" class="form-control" id="create-cost">
                         </div>
                     </div>
+                    <%--描述--%>
                     <div class="form-group">
                         <label for="create-describe" class="col-sm-2 control-label">描述</label>
                         <div class="col-sm-10" style="width: 81%;">
-                            <textarea class="form-control" rows="3" id="create-describe"></textarea>
+                            <textarea class="form-control" rows="3" id="create-description"></textarea>
                         </div>
                     </div>
-
                 </form>
-
             </div>
+            <%--关闭,保存
+                data-dismiss="modal" 关闭模态窗口
+            --%>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+                <button type="button" class="btn btn-primary" id="saveBtn">保存</button>
             </div>
         </div>
     </div>
