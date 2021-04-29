@@ -1,5 +1,6 @@
 package com.jbp.crm.handler;
 
+import com.jbp.crm.exception.ActivityAddException;
 import com.jbp.crm.exception.LoginException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +13,7 @@ import java.util.Map;
  * @author SQueen
  */
 @ControllerAdvice
-public class UserExceptionHandler {
+public class GlobalExceptionHandler {
     @ExceptionHandler(LoginException.class)
     @ResponseBody
     public Map<String,Object> loginException(Exception e){
@@ -20,5 +21,14 @@ public class UserExceptionHandler {
        map.put("msg",e.getMessage());
        map.put("success",false);
        return map;
+    }
+
+    @ExceptionHandler(ActivityAddException.class)
+    @ResponseBody
+    public Map<String,Object> activityAddException(Exception e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("msg",e.getMessage());
+        map.put("success",false);
+        return map;
     }
 }
