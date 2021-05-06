@@ -13,3 +13,4 @@ com/jbp/crm/settings/web/controller/UserController.class
 com/jbp/crm/utils/SqlSessionUtil.class
 com/jbp/crm/utils/DateTimeUtil.class
 com/jbp/crm/utils/TransactionInvocationHandler.class
+com/jbp/crm/exception/ActivityDeleteException.class

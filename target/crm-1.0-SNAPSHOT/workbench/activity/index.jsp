@@ -18,7 +18,9 @@
             src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
     <script type="text/javascript"
             src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
-
+    <link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+    <script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+    <script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
     <script type="text/javascript">
         $(function () {
             //为创建按钮绑定事件,打开添加操作的模态窗口
@@ -61,18 +63,18 @@
             $("#saveBtn").click(function () {
                 $.ajax({
                     url: "activity/save",
-                    data:{
-                        "owner":$.trim($("#create-marketActivityOwner").val()),
-                        "name":$.trim($("#create-marketActivityName").val()),
-                        "startDate":$.trim($("#create-startDate").val()),
-                        "endDate":$.trim($("#create-endDate").val()),
-                        "cost":$.trim($("#create-cost").val()),
-                        "description":$.trim($("#create-description").val())
+                    data: {
+                        "owner": $.trim($("#create-marketActivityOwner").val()),
+                        "name": $.trim($("#create-marketActivityName").val()),
+                        "startDate": $.trim($("#create-startDate").val()),
+                        "endDate": $.trim($("#create-endDate").val()),
+                        "cost": $.trim($("#create-cost").val()),
+                        "description": $.trim($("#create-description").val())
                     },
                     type: "post",
                     dataType: "json",
                     success: function (resp) {
-                        if (resp.success){
+                        if (resp.success) {
                             //添加成功
                             //清空添加操作模态窗口中数据
                             /*
@@ -83,18 +85,163 @@
                             $("#createActivityModal").modal("hide");
                             //刷新市场活动信息列表(局部刷新)
 
-                        } else{
+                        } else {
                             //添加失败
-                            alert(1)
                             alert(resp.msg);
                         }
                     }
                 })
             })
+
+            //页面加载完毕后触发一个方法,默认展开第一页,每页展示2条数据
+            pageList(1, 2);
+
+            //为查询按钮绑定事件,触发pageList方法
+            $("#searchBtn").click(function () {
+                //点击查询按钮时,应该将搜索框中的信息保存起来,保存到隐藏域中
+                $("#hidden-name").val($.trim($("#search-name").val()));
+                $("#hidden-owner").val($.trim($("#search-owner").val()));
+                $("#hidden-startDate").val($.trim($("#search-startDate").val()));
+                $("#hidden-endDate").val($.trim($("#search-endDate").val()));
+                pageList(1, 2);
+            })
+
+            //为全选的复选框绑定事件,触发全选操作
+            $("#qx").click(function () {
+                $("input[name=xz]").prop("checked", this.checked)
+            })
+
+            /*
+                动态生成的元素,不能以普通绑定事件的形式进行操作
+                动态生成的元素,要以on方法的形式来触发事件
+                语法:
+                    $(需要绑定元素的有效的外层元素).on(绑定事件的方式,需要绑定的元素的jquery对象,回调函数)
+             */
+            $("#activityBody").on("click", $("input[name=xz]"), function () {
+                $("#qx").prop("checked", $("input[name=xz]").length == $("input[name=xz]:checked").length);
+            })
+
+            //为删除按钮绑定事件
+            $("#deleteBtn").click(function () {
+                //找到复选框中打√的复选框jquery对象
+                var $xz = $("input[name=xz]:checked");
+                if ($xz.length == 0) {
+                    alert("请选择需要删除的记录");
+                } else {
+                    if (confirm("确定删除所选的记录吗?")) {
+                        //url:activity/delete?id=xxx&id=xxx&id=xxx
+                        //拼接参数
+                        let param = "";
+                        //遍历$xz
+                        $.each($xz, function (index, element) {
+                            param += "id=" + $(element).val();
+                            //如果不是最后一个元素,追加一个&
+                            if (index < $xz.length - 1) {
+                                param += "&";
+                            }
+                        })
+                        //alert(param);
+                        $.ajax({
+                            url: "activity/delete",
+                            data: param,
+                            type: "post",
+                            dataType: "json",
+                            success: function (resp) {
+                                if (resp.success) {
+                                    pageList(1, 2);
+                                } else {
+                                    alert(resp.msg);
+                                }
+                            }
+                        })
+                    }
+                }
+            })
         });
+
+        /**
+         * 分页函数
+         * 对于所有的关系新该数据库,做前端分页相关的基础组件
+         * 发出ajax请求到后台,从后台取得最新的市场活动信息列表数据,通过响应回来的数据,局部刷新市场活动信息列表
+         * @param pageNo 页码
+         * @param pageSize 每页展现的记录数
+         */
+        function pageList(pageNo, pageSize) {
+            //取消全选的勾
+            $("#qx").prop("checked", false);
+            //查询前,将隐藏域中保存的信息取出来,重新赋予到搜索框中
+            $("#search-name").val($.trim($("#hidden-name").val()));
+            $("#search-owner").val($.trim($("#hidden-owner").val()));
+            $("#search-startDate").val($.trim($("#hidden-startDate").val()));
+            $("#search-endDate").val($.trim($("#hidden-endDate").val()));
+            $.ajax({
+                url: "activity/pageList",
+                data: {
+                    "pageNo": pageNo,
+                    "pageSize": pageSize,
+                    "name": $.trim($("#search-name").val()),
+                    "owner": $.trim($("#search-owner").val()),
+                    "startDate": $.trim($("#search-startDate").val()),
+                    "endDate": $.trim($("#search-endDate").val())
+                },
+                type: "get",
+                dataType: "json",
+                success: function (resp) {
+                    /*
+                        resp
+                            1. 市场活动信息列表
+                            2. 分页插件需要查询出来的总记录数,{"total":100}
+
+                            {"total":100,"dataList":[{市场活动1},{2},{3}]}
+                     */
+                    let html = "";
+                    $.each(resp.dataList, function (index, element) {
+                        html += '<tr class="active">';
+                        html += '<td><input type="checkbox" name="xz" value="' + element.id + '"/></td>';
+                        html += '<td><a style="text-decoration: none; cursor: pointer;"onclick="window.location.href=\'workbench/activity/detail.jsp\';">' + element.name + '</a></td>';
+                        html += '<td>' + element.owner + '</td>';
+                        html += '<td>' + element.startDate + '</td>';
+                        html += '<td>' + element.endDate + '</td>';
+                        html += '</tr>';
+                    })
+                    $("#activityBody").html(html);
+                    //计算总页数
+                    var totalPages = resp.total % pageSize == 0 ? resp.total / pageSize : parseInt(resp.total / pageSize) + 1;
+                    //数据处理完毕后,结合分页插件,对前端展现分页相关信息
+                    $("#activityPage").bs_pagination({
+                        currentPage: pageNo, // 页码
+                        rowsPerPage: pageSize, // 每页显示的记录条数
+                        maxRowsPerPage: 20, // 每页最多显示的记录条数
+                        totalPages: totalPages, // 总页数
+                        totalRows: resp.total, // 总记录条数
+
+                        visiblePageLinks: 3, // 显示几个卡片
+
+                        showGoToPage: true,
+                        showRowsPerPage: true,
+                        showRowsInfo: true,
+                        showRowsDefaultInfo: true,
+                        /**
+                         * 该回调函数在点击分页组件的时候触发
+                         * @param event
+                         * @param data
+                         */
+                        onChangePage: function (event, data) {
+                            pageList(data.currentPage, data.rowsPerPage);
+                        }
+                    });
+
+                }
+            })
+        }
     </script>
 </head>
 <body>
+
+<input type="hidden" id="hidden-name"/>
+<input type="hidden" id="hidden-owner"/>
+<input type="hidden" id="hidden-startDate"/>
+<input type="hidden" id="hidden-endDate"/>
 
 <!-- 创建市场活动的模态窗口 -->
 <div class="modal fade" id="createActivityModal" role="dialog">
@@ -249,14 +396,14 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">名称</div>
-                        <input class="form-control" type="text">
+                        <input class="form-control" type="text" id="search-name">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">所有者</div>
-                        <input class="form-control" type="text">
+                        <input class="form-control" type="text" id="search-owner">
                     </div>
                 </div>
 
@@ -264,17 +411,17 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">开始日期</div>
-                        <input class="form-control" type="text" id="startTime"/>
+                        <input class="form-control" type="text" id="search-startDate"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">结束日期</div>
-                        <input class="form-control" type="text" id="endTime">
+                        <input class="form-control" type="text" id="search-endDate">
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-default">查询</button>
+                <button type="button" class="btn btn-default" id="searchBtn">查询</button>
 
             </form>
         </div>
@@ -299,7 +446,9 @@
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span
                         class="glyphicon glyphicon-pencil"></span> 修改
                 </button>
-                <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+                <button type="button" class="btn btn-danger" id="deleteBtn"><span
+                        class="glyphicon glyphicon-minus"></span> 删除
+                </button>
             </div>
 
         </div>
@@ -307,15 +456,16 @@
             <table class="table table-hover">
                 <thead>
                 <tr style="color: #B3B3B3;">
-                    <td><input type="checkbox"/></td>
+                    <td><input type="checkbox" id="qx"/></td>
                     <td>名称</td>
                     <td>所有者</td>
                     <td>开始日期</td>
                     <td>结束日期</td>
                 </tr>
                 </thead>
-                <tbody>
-                <tr class="active">
+                <%--市场活动信息列表详情--%>
+                <tbody id="activityBody">
+                <%--<tr class="active">
                     <td><input type="checkbox"/></td>
                     <td><a style="text-decoration: none; cursor: pointer;"
                            onclick="window.location.href='workbench/activity/detail.jsp';">发传单</a></td>
@@ -330,43 +480,14 @@
                     <td>zhangsan</td>
                     <td>2020-10-10</td>
                     <td>2020-10-20</td>
-                </tr>
+                </tr>--%>
                 </tbody>
             </table>
         </div>
 
         <div style="height: 50px; position: relative;top: 30px;">
-            <div>
-                <button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-            </div>
-            <div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-                <button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        10
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">20</a></li>
-                        <li><a href="#">30</a></li>
-                    </ul>
-                </div>
-                <button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-            </div>
-            <div style="position: relative;top: -88px; left: 285px;">
-                <nav>
-                    <ul class="pagination">
-                        <li class="disabled"><a href="#">首页</a></li>
-                        <li class="disabled"><a href="#">上一页</a></li>
-                        <li class="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><a href="#">下一页</a></li>
-                        <li class="disabled"><a href="#">末页</a></li>
-                    </ul>
-                </nav>
+            <div id="activityPage">
+
             </div>
         </div>
 
