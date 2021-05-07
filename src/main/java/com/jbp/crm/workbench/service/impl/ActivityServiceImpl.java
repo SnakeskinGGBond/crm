@@ -3,10 +3,14 @@ package com.jbp.crm.workbench.service.impl;
 import com.jbp.crm.exception.ActivityAddException;
 import com.jbp.crm.exception.ActivityDeleteException;
 import com.jbp.crm.exception.ActivityException;
+import com.jbp.crm.exception.ActivityUpdateException;
+import com.jbp.crm.settings.dao.UserDao;
+import com.jbp.crm.settings.domain.User;
 import com.jbp.crm.vo.PaginationVO;
 import com.jbp.crm.workbench.dao.ActivityDao;
 import com.jbp.crm.workbench.dao.ActivityRemarkDao;
 import com.jbp.crm.workbench.domain.Activity;
+import com.jbp.crm.workbench.domain.ActivityRemark;
 import com.jbp.crm.workbench.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ public class ActivityServiceImpl implements ActivityService {
     private ActivityDao activityDao;
     @Autowired
     private ActivityRemarkDao activityRemarkDao;
+    @Autowired
+    private UserDao userDao;
 
     /**
      * 市场活动保存方法
@@ -70,6 +76,11 @@ public class ActivityServiceImpl implements ActivityService {
         return vo;
     }
 
+    /**
+     * 市场活动删除方法
+     * @param id 需要删除的市场活动的id,是个数组,支持批量删除
+     * @throws ActivityException 市场活动删除的相关错误
+     */
     @Override
     @Transactional(
             propagation = Propagation.REQUIRED,
@@ -91,6 +102,52 @@ public class ActivityServiceImpl implements ActivityService {
         if (count3 != id.length) {
             throw new ActivityDeleteException("删除失败");
         }
+    }
+
+    /**
+     * 获取用户列表和市场活动信息方法
+     * @param id 市场活动信息的id
+     * @return 用户列表和市场活动信息
+     */
+    @Override
+    public Map<String, Object> getUserListAndActivity(String id) {
+        //取userList
+        List<User> userList = userDao.getUserList();
+        //取activity
+        Activity activity = activityDao.getById(id);
+        //返回map
+        Map<String,Object> map = new HashMap<>();
+        map.put("userList",userList);
+        map.put("activity",activity);
+        return map;
+    }
+
+    /**
+     * 更新市场活动信息方法
+     * @param activity 需要更新的市场活动信息
+     */
+    @Override
+    public void update(Activity activity) throws ActivityException{
+        if (activity.getStartDate().compareTo(activity.getEndDate()) > 0) {
+            System.out.println("更新失败,起始时间晚于结束时间");
+            throw new ActivityUpdateException("更新失败,起始时间晚于结束时间");
+        }
+        Integer res = activityDao.update(activity);
+        if (res != 1) {
+            throw new ActivityUpdateException("更新失败");
+        }
+    }
+
+    @Override
+    public Activity detail(String id) {
+        Activity activity = activityDao.detail(id);
+        return activity;
+    }
+
+    @Override
+    public List<ActivityRemark> getRemarkListByAid(String id) {
+        List<ActivityRemark> arList = activityRemarkDao.getRemarkListByAid(id);
+        return arList;
     }
 
 
