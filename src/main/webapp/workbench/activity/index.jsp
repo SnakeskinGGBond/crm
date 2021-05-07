@@ -84,7 +84,15 @@
                             //关闭模态窗口
                             $("#createActivityModal").modal("hide");
                             //刷新市场活动信息列表(局部刷新)
-
+                            /*
+                            * $("#activityPage").bs_pagination('getOption', 'currentPage')
+                            *   操作后停留在当前页
+                            *
+                            * $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
+                            *   操作后维持已经设置好的每页展现的记录数
+                            *
+                            * */
+                            pageList(1, $("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
                         } else {
                             //添加失败
                             alert(resp.msg);
@@ -94,7 +102,7 @@
             })
 
             //页面加载完毕后触发一个方法,默认展开第一页,每页展示2条数据
-            pageList(1, 2);
+            pageList(1, 5);
 
             //为查询按钮绑定事件,触发pageList方法
             $("#searchBtn").click(function () {
@@ -148,7 +156,7 @@
                             dataType: "json",
                             success: function (resp) {
                                 if (resp.success) {
-                                    pageList(1, 2);
+                                    pageList(1, $("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
                                 } else {
                                     alert(resp.msg);
                                 }
@@ -156,6 +164,96 @@
                         })
                     }
                 }
+            })
+
+            //为修改按钮绑定事件,打开修改操作的模态窗口
+            $("#editBtn").click(function () {
+                $(".time").datetimepicker({
+                    minView: "month",
+                    language: "zh-CN",
+                    format: "yyyy-mm-dd",
+                    autoclose: true,
+                    todayBtn: true,
+                    pickerPosition: "bottom-left"
+                });
+                let $xz = $("input[name=xz]:checked");
+                if ($xz.length == 0) {
+                    alert("请选择要修改的记录!")
+                } else if ($xz.length > 1) {
+                    alert("只能选择一条记录进行修改!")
+                } else {
+                    //alert("1");
+                    var id = $xz.val()
+                    $.ajax({
+                        url: "activity/getUserListAndActivity",
+                        data: {
+                            "id": id
+                        },
+                        type: "get",
+                        dataType: "json",
+                        success: function (resp) {
+                            /*
+                                resp
+                                    用户列表
+                                    市场活动对象
+                                    {"userList":[{用户1},{2},{3}..],"activity":{市场活动对象}}
+                             */
+                            let html = "<option></option>";
+                            $.each(resp.userList, function (index, element) {
+                                html += "<option value='" + element.id + "'>" + element.name + "</option>";
+                            })
+                            $("#edit-marketActivityOwner").html(html);
+                            //处理单条activity
+                            $("#edit-marketActivityOwner").val(resp.activity.owner);
+                            $("#edit-marketActivityName").val(resp.activity.name);
+                            $("#edit-startTime").val(resp.activity.startDate);
+                            $("#edit-endTime").val(resp.activity.endDate);
+                            $("#edit-cost").val(resp.activity.cost);
+                            $("#edit-describe").val(resp.activity.description);
+                            $("#edit-id").val(resp.activity.id);
+                            //所有数据加载完毕后,打开模态窗口
+                            $("#editActivityModal").modal("show");
+                        }
+                    })
+                }
+            })
+
+            //为更新按钮绑定事件
+            $("#updateBtn").click(function () {
+                $.ajax({
+                    url: "activity/update",
+                    data: {
+                        "id": $.trim($("#edit-id").val()),
+                        "owner": $.trim($("#edit-marketActivityOwner").val()),
+                        "name": $.trim($("#edit-marketActivityName").val()),
+                        "startDate": $.trim($("#edit-startTime").val()),
+                        "endDate": $.trim($("#edit-endTime").val()),
+                        "cost": $.trim($("#edit-cost").val()),
+                        "description": $.trim($("#edit-describe").val())
+                    },
+                    type: "post",
+                    dataType: "json",
+                    success: function (resp) {
+                        if (resp.success) {
+                            //刷新市场活动信息列表(局部刷新)
+                            /*
+                            * $("#activityPage").bs_pagination('getOption', 'currentPage')
+                            *   操作后停留在当前页
+                            *
+                            * $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
+                            *   操作后维持已经设置好的每页展现的记录数
+                            *
+                            * */
+                            pageList($("#activityPage").bs_pagination('getOption', 'currentPage'),
+                                $("#activityPage").bs_pagination('getOption', 'rowsPerPage'))
+                            //关闭修改模块的模态窗口
+                            $("#editActivityModal").modal("hide");
+                        } else {
+                            //添加失败
+                            alert(resp.msg);
+                        }
+                    }
+                })
             })
         });
 
@@ -198,7 +296,7 @@
                     $.each(resp.dataList, function (index, element) {
                         html += '<tr class="active">';
                         html += '<td><input type="checkbox" name="xz" value="' + element.id + '"/></td>';
-                        html += '<td><a style="text-decoration: none; cursor: pointer;"onclick="window.location.href=\'workbench/activity/detail.jsp\';">' + element.name + '</a></td>';
+                        html += '<td><a style="text-decoration: none; cursor: pointer;"onclick="window.location.href=\'activity/detail?id=' + element.id + '\';">' + element.name + '</a></td>';
                         html += '<td>' + element.owner + '</td>';
                         html += '<td>' + element.startDate + '</td>';
                         html += '<td>' + element.endDate + '</td>';
@@ -325,46 +423,51 @@
             <div class="modal-body">
 
                 <form class="form-horizontal" role="form">
-
+                    <input type="hidden" id="edit-id"/>
                     <div class="form-group">
                         <label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 270px;">
                             <select class="form-control" id="edit-marketActivityOwner">
-                                <option>zhangsan</option>
-                                <option>lisi</option>
-                                <option>wangwu</option>
                             </select>
                         </div>
                         <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 270px;">
-                            <input type="text" class="form-control" id="edit-marketActivityName" value="发传单">
+                            <input type="text" class="form-control" id="edit-marketActivityName">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
                         <div class="col-sm-10" style="width: 270px;">
-                            <input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
+                            <input type="text" class="form-control time" id="edit-startTime" style="cursor: pointer"
+                                   readonly>
                         </div>
                         <label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
                         <div class="col-sm-10" style="width: 270px;">
-                            <input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
+                            <input type="text" class="form-control time" id="edit-endTime" style="cursor: pointer"
+                                   readonly>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="edit-cost" class="col-sm-2 control-label">成本</label>
                         <div class="col-sm-10" style="width: 270px;">
-                            <input type="text" class="form-control" id="edit-cost" value="5,000">
+                            <input type="text" class="form-control" id="edit-cost">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="edit-describe" class="col-sm-2 control-label">描述</label>
                         <div class="col-sm-10" style="width: 81%;">
-                            <textarea class="form-control" rows="3" id="edit-describe">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
+                            <%--关于文本域textarea:
+                                1. 一定以标签对的形式来呈现,正常状态下标签对要紧挨着,不要有空格
+                                2. textarea虽然是以标签对的形式来呈现的,但是也是属于表单元素范畴,
+                                    我们对textarea的取值和赋值操作应该统一使用val()方法,而不是html()方法
+                                3.
+                            --%>
+                            <textarea class="form-control" rows="3" id="edit-describe"></textarea>
                         </div>
                     </div>
 
@@ -373,7 +476,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+                <button type="button" class="btn btn-primary" id="updateBtn">更新</button>
             </div>
         </div>
     </div>
@@ -443,7 +546,7 @@
                 <button type="button" class="btn btn-primary" id="addBtn">
                     <span class="glyphicon glyphicon-plus"></span> 创建
                 </button>
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span
+                <button type="button" class="btn btn-default" id="editBtn"><span
                         class="glyphicon glyphicon-pencil"></span> 修改
                 </button>
                 <button type="button" class="btn btn-danger" id="deleteBtn"><span
