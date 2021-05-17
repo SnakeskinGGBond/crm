@@ -2,7 +2,11 @@
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/utils/ServiceFactory.java
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/workbench/service/impl/ActivityServiceImpl.java
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/workbench/domain/ActivityRemark.java
+/Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/exception/ActivityRemarkSaveException.java
+/Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/exception/ActivityUpdateException.java
+/Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/exception/ActivityRemarkDeleteException.java
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/exception/LoginException.java
+/Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/exception/ActivityDeleteException.java
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/handler/LoginInterceptor.java
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/utils/TransactionInvocationHandler.java
 /Users/app/Desktop/Projects/workspaceForCrm/crm/src/main/java/com/jbp/crm/workbench/web/controller/ActivityController.java
