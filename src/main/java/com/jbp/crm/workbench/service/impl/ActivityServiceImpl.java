@@ -1,9 +1,6 @@
 package com.jbp.crm.workbench.service.impl;
 
-import com.jbp.crm.exception.ActivityAddException;
-import com.jbp.crm.exception.ActivityDeleteException;
-import com.jbp.crm.exception.ActivityException;
-import com.jbp.crm.exception.ActivityUpdateException;
+import com.jbp.crm.exception.*;
 import com.jbp.crm.settings.dao.UserDao;
 import com.jbp.crm.settings.domain.User;
 import com.jbp.crm.vo.PaginationVO;
@@ -148,6 +145,30 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityRemark> getRemarkListByAid(String id) {
         List<ActivityRemark> arList = activityRemarkDao.getRemarkListByAid(id);
         return arList;
+    }
+
+    @Override
+    public void removeActivityRemark(String id) throws ActivityException{
+        Integer res = activityRemarkDao.removeActivityRemark(id);
+        if (res != 1){
+            throw new ActivityRemarkDeleteException("删除失败!");
+        }
+    }
+
+    @Override
+    public void saveRemark(ActivityRemark activityRemark) throws ActivityException{
+        Integer res = activityRemarkDao.saveRemark(activityRemark);
+        if (res != 1){
+            throw new ActivityRemarkSaveException("添加失败!");
+        }
+    }
+
+    @Override
+    public void updateRemark(ActivityRemark ar) throws ActivityException{
+        Integer res = activityRemarkDao.updateRemark(ar);
+        if (res != 1){
+            throw new ActivityRemarkUpdateException("更新失败!");
+        }
     }
 
 

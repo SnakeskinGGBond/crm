@@ -23,4 +23,10 @@ public interface ActivityService {
     Activity detail(String id);
 
     List<ActivityRemark> getRemarkListByAid(String id);
+
+    void removeActivityRemark(String id) throws ActivityException;
+
+    void saveRemark(ActivityRemark ar) throws ActivityException;
+
+    void updateRemark(ActivityRemark ar) throws ActivityException;
 }

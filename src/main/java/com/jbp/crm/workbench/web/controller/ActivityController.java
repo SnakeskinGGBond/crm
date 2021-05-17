@@ -133,6 +133,11 @@ public class ActivityController {
         return map;
     }
 
+    /**
+     * 展示市场活动信息详情
+     * @param id 展示的市场活动的id
+     * @return 通过id查询到的市场活动对象,请求转发的路径
+     */
     @RequestMapping("detail")
     public ModelAndView detail(String id){
         Activity activity = activityService.detail(id);
@@ -141,11 +146,79 @@ public class ActivityController {
         mv.setViewName("forward:/workbench/activity/detail.jsp");
         return mv;
     }
+
+    /**
+     * 通过id获取备注列表
+     * @param id ActivityId
+     * @return ActivityId所拥有的备注列表
+     */
     @RequestMapping("getRemarkListByAid")
     @ResponseBody
     public List<ActivityRemark> getRemarkListByAid(String id){
         List<ActivityRemark> arList = activityService.getRemarkListByAid(id);
         return arList;
+    }
+
+    /**
+     * 删除市场活动备注
+     * @param id 需要删除的市场活动备注的id
+     * @return 删除成功
+     * @throws ActivityException 市场活动备注相关异常
+     */
+    @RequestMapping("removeActivityRemark")
+    @ResponseBody
+    public Map<String,Object> removeActivityRemark(String id) throws ActivityException{
+        System.out.println(id);
+        activityService.removeActivityRemark(id);
+        Map<String,Object> map = new HashMap<>();
+        map.put("success",true);
+        return map;
+    }
+
+    @RequestMapping("saveRemark")
+    @ResponseBody
+    public Map<String,Object> saveRemark(String noteContent,String activityId,HttpServletRequest request) throws ActivityException {
+        System.out.println("执行添加备注操作");
+        Map<String,Object> map = new HashMap<>();
+        String id = UUIDUtil.getUUID();
+        String createBy = ((User) request.getSession().getAttribute("user")).getName();
+        String createTime = DateTimeUtil.getSysTime();
+        String editFlag = "0";
+
+        ActivityRemark ar = new ActivityRemark();
+        ar.setId(id);
+        ar.setNoteContent(noteContent);
+        ar.setActivityId(activityId);
+        ar.setCreateBy(createBy);
+        ar.setCreateTime(createTime);
+        ar.setEditFlag(editFlag);
+
+        activityService.saveRemark(ar);
+        map.put("success",true);
+        map.put("activityRemark",ar);
+
+        return map;
+    }
+
+    @RequestMapping("updateRemark")
+    @ResponseBody
+    public Map<String,Object> updateRemark(String id,String noteContent,HttpServletRequest request) throws ActivityException {
+        System.out.println("执行修改备注操作");
+        Map<String ,Object> map = new HashMap<>();
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User) request.getSession().getAttribute("user")).getName();
+        ActivityRemark ar = new ActivityRemark();
+        ar.setId(id);
+        ar.setNoteContent(noteContent);
+        ar.setEditBy(editBy);
+        ar.setEditTime(editTime);
+        ar.setEditFlag("1");
+
+        activityService.updateRemark(ar);
+
+        map.put("success",true);
+        map.put("activityRemark",ar);
+        return map;
     }
 }
 

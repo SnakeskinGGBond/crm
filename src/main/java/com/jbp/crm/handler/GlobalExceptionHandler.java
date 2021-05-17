@@ -1,9 +1,6 @@
 package com.jbp.crm.handler;
 
-import com.jbp.crm.exception.ActivityAddException;
-import com.jbp.crm.exception.ActivityDeleteException;
-import com.jbp.crm.exception.ActivityUpdateException;
-import com.jbp.crm.exception.LoginException;
+import com.jbp.crm.exception.*;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,9 +39,37 @@ public class GlobalExceptionHandler {
         map.put("success",false);
         return map;
     }
+
     @ExceptionHandler(ActivityUpdateException.class)
     @ResponseBody
     public Map<String,Object> activityUpdateException(Exception e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("msg",e.getMessage());
+        map.put("success",false);
+        return map;
+    }
+
+    @ExceptionHandler(ActivityRemarkDeleteException.class)
+    @ResponseBody
+    public Map<String,Object> activityRemarkDeleteException(Exception e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("msg",e.getMessage());
+        map.put("success",false);
+        return map;
+    }
+
+    @ExceptionHandler(ActivityRemarkSaveException.class)
+    @ResponseBody
+    public Map<String,Object> ActivityRemarkSaveException(Exception e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("msg",e.getMessage());
+        map.put("success",false);
+        return map;
+    }
+
+    @ExceptionHandler(ActivityRemarkUpdateException.class)
+    @ResponseBody
+    public Map<String,Object> ActivityRemarkUpdateException(Exception e){
         Map<String,Object> map = new HashMap<>();
         map.put("msg",e.getMessage());
         map.put("success",false);
