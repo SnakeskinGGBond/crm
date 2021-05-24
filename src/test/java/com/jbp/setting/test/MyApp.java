@@ -1,11 +1,19 @@
 package com.jbp.setting.test;
 
+import com.jbp.crm.settings.domain.DicValue;
+import com.jbp.crm.settings.service.DicService;
+import com.jbp.crm.settings.service.impl.DicServiceImpl;
 import com.jbp.crm.utils.DateTimeUtil;
 import com.jbp.crm.utils.MD5Util;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.ServletContext;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MyApp {
     @Test
@@ -46,6 +54,14 @@ public class MyApp {
         String jieshu = "2019-10-19";
         int i = kaishi.compareTo(jieshu);
         System.out.println(i);
+    }
+
+    @Test
+    public void listenerTest(){
+        DicServiceImpl ds = new DicServiceImpl();
+        Map<String, List<DicValue>> map = ds.getAll();
+
+        System.out.println(map.size());
     }
 
 }
